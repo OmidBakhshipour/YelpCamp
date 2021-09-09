@@ -35,9 +35,20 @@ router.get(
     "/:id",
     catchAsync(async (req, res) => {
         const { id } = req.params;
+        /*
+        const campground = await Campground.findById(id).populate("reviews").populate("author");
+        Here the author is the campground's author, we want the author of each review.
+        What should we do? Nested populate. down below
+        */
         const campground = await Campground.findById(id)
-            .populate("reviews")
+            .populate({
+                path: "reviews",
+                populate: {
+                    path: "author",
+                },
+            })
             .populate("author");
+        // Telling first populate the reviews and their authors, then populate the campground's author.
         if (!campground) {
             req.flash("error", "No Campground Found");
             return res.redirect("/campgrounds");
