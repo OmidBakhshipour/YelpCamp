@@ -13,8 +13,10 @@ module.exports.createCampground = async (req, res, next) => {
     // req.body : {"campground":{"title":"something","location":"something", ...}}
     // if (!req.body.campground) throw new ExpressError("Invalid Campground Data", 400);
     const campground = new Campground(req.body.campground);
+    campground.images = req.files.map((f) => ({ url: f.path, filename: f.filename }));  // req.files is from multer
     campground.author = req.user._id;
     await campground.save();
+    console.log(campground)
     req.flash("success", "Succesfully made a new campground");
     res.redirect(`/campgrounds/${campground._id}`);
 };
@@ -68,7 +70,3 @@ module.exports.deleteCampground = async (req, res) => {
     req.flash("success", "Successfully deleted campground");
     res.redirect("/campgrounds");
 };
-
-
-
-
