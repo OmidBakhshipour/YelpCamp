@@ -12,6 +12,8 @@ ImageSchema.virtual("thumbnail").get(function () {
     return this.url.replace("/upload", "/upload/w_200");
 });
 
+const opts = { toJSON: { virtuals: true } };
+
 const CampgroudSchema = new Schema({
     title: String,
     images: [ImageSchema],
@@ -39,6 +41,13 @@ const CampgroudSchema = new Schema({
             ref: "Review",
         },
     ],
+}, opts);
+
+// Not stored in database, just made by virtual.
+CampgroudSchema.virtual("properties.popUpMarkup").get(function () {
+    return `
+    <strong><a href="/campgrounds/${this._id}">${this.title}</a></strong>
+    <p>${this.description.substring(0,20)}...`
 });
 
 CampgroudSchema.post("findOneAndDelete", async function (doc) {
